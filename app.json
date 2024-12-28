@@ -19,10 +19,23 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.hyejean.CHESSMONG"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "97fca391-35db-493e-83b4-55fb822a7468"
+      }
+    },
+    "owner": "hyejean",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/97fca391-35db-493e-83b4-55fb822a7468"
     }
   }
 }
