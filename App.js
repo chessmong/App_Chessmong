@@ -1,44 +1,35 @@
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, View } from "react-native";
 import { WebView } from "react-native-webview";
-import React, { useRef } from "react";
-import {
-  GestureHandlerRootView,
-  PanGestureHandler,
-  GestureHandler,
-  GestureDetector,
-  Gesture,
-} from "react-native-gesture-handler";
-import Animated, { useSharedValue, useAnimatedStyle, withSpring } from "react-native-reanimated";
+import React, { useRef, useState } from "react";
+import { GestureHandlerRootView, PanGestureHandler } from "react-native-gesture-handler";
+import Animated, { Easing } from "react-native";
 
 export default function App() {
   const webviewRef = useRef(null);
-  const translateY = useSharedValue(0);
+  const [translateY, setTranslateY] = useState(0);
 
-  const panGesture = Gesture.Pan()
-    .onUpdate((event) => {
-      translateY.value = event.translationY;
-    })
-    .onEnd((event) => {
-      if (event.translationY > 100) {
-        if (webviewRef.current) {
-          webviewRef.current.reload();
-        }
+  const onGestureEvent = (event) => {
+    setTranslateY(event.nativeEvent.translationY);
+  };
+
+  const onHandlerStateChange = (event) => {
+    if (event.nativeEvent.translationY > 100) {
+      if (webviewRef.current) {
+        webviewRef.current.reload();
       }
+    }
 
-      translateY.value = withSpring(0);
-    });
-
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ translateY: translateY.value }],
-    };
-  });
+    setTranslateY(0);
+  };
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <GestureDetector gesture={panGesture}>
-        <Animated.View style={[styles.container, animatedStyle]}>
+      <PanGestureHandler
+        onGestureEvent={onGestureEvent}
+        onHandlerStateChange={onHandlerStateChange}
+      >
+        <Animated.View style={[styles.container, { transform: [{ translateY }] }]}>
           <WebView
             ref={webviewRef}
             source={{ uri: "https://chessmong.com" }}
@@ -47,7 +38,7 @@ export default function App() {
             cacheEnabled={false}
           />
         </Animated.View>
-      </GestureDetector>
+      </PanGestureHandler>
       <StatusBar style="auto" />
     </GestureHandlerRootView>
   );
