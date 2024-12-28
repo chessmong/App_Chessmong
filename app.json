@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "CHESSMONG",
-    "slug": "CHESSMONG",
+    "name": "체스몽",
+    "slug": "체스몽",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
