@@ -1,29 +1,55 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, View, Button } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { WebView } from "react-native-webview";
 import React, { useRef } from "react";
+import {
+  GestureHandlerRootView,
+  PanGestureHandler,
+  GestureHandler,
+  GestureDetector,
+  Gesture,
+} from "react-native-gesture-handler";
+import Animated, { useSharedValue, useAnimatedStyle, withSpring } from "react-native-reanimated";
 
 export default function App() {
   const webviewRef = useRef(null);
+  const translateY = useSharedValue(0);
 
-  const reloadPage = () => {
-    if (webviewRef.current) {
-      webviewRef.current.reload();
-    }
-  };
+  const panGesture = Gesture.Pan()
+    .onUpdate((event) => {
+      translateY.value = event.translationY;
+    })
+    .onEnd((event) => {
+      if (event.translationY > 100) {
+        if (webviewRef.current) {
+          webviewRef.current.reload();
+        }
+      }
+
+      translateY.value = withSpring(0);
+    });
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateY: translateY.value }],
+    };
+  });
 
   return (
-    <View style={styles.container}>
-      <WebView
-        ref={webviewRef}
-        source={{ uri: "https://chessmong.com" }}
-        style={{ flex: 1 }}
-        originWhitelist={["*"]}
-        cacheEnabled={false}
-      />
-      <Button title="Reload Page" onPress={reloadPage} />
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <GestureDetector gesture={panGesture}>
+        <Animated.View style={[styles.container, animatedStyle]}>
+          <WebView
+            ref={webviewRef}
+            source={{ uri: "https://chessmong.com" }}
+            style={{ flex: 1 }}
+            originWhitelist={["*"]}
+            cacheEnabled={false}
+          />
+        </Animated.View>
+      </GestureDetector>
       <StatusBar style="auto" />
-    </View>
+    </GestureHandlerRootView>
   );
 }
 
