@@ -1,8 +1,8 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { WebView } from "react-native-webview";
 import React, { useRef, useState } from "react";
-import { GestureHandlerRootView, PanGestureHandler } from "react-native-gesture-handler";
+import { GestureHandlerRootView, PanGestureHandler, State } from "react-native-gesture-handler";
 import Animated from "react-native";
 
 export default function App() {
@@ -10,16 +10,12 @@ export default function App() {
   const [translateY, setTranslateY] = useState(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const onGestureEvent = (event) => {
-    const translationY = event.nativeEvent.translationY;
-
-    if (translationY > 0) {
-      setTranslateY(translationY);
-    }
-  };
+  const onGestureEvent = Animated.event([{ nativeEvent: { translationY: setTranslateY } }], {
+    useNativeDriver: false,
+  });
 
   const onHandlerStateChange = (event) => {
-    if (event.nativeEvent.translationY > 100) {
+    if (event.nativeEvent.state === State.END && event.nativeEvent.translationY > 100) {
       if (webviewRef.current && !isRefreshing) {
         setIsRefreshing(true);
         webviewRef.current.reload();
@@ -29,20 +25,12 @@ export default function App() {
     setTranslateY(0);
   };
 
-  const handleWebViewScroll = (event) => {
-    const { contentOffset } = event.nativeEvent;
-
-    if (contentOffset.y > 0) {
-      setTranslateY(0);
-    }
-  };
-
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <PanGestureHandler
         onGestureEvent={onGestureEvent}
         onHandlerStateChange={onHandlerStateChange}
-        enabled={translateY === 0}
+        enabled={!isRefreshing}
       >
         <Animated.View
           style={[styles.container, { transform: [{ translateY: isRefreshing ? 0 : translateY }] }]}
@@ -53,7 +41,6 @@ export default function App() {
             style={{ flex: 1 }}
             originWhitelist={["*"]}
             cacheEnabled={false}
-            onScroll={handleWebViewScroll}
           />
         </Animated.View>
       </PanGestureHandler>
