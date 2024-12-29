@@ -38,7 +38,6 @@
     },
     "updates": {
       "url": "https://u.expo.dev/97fca391-35db-493e-83b4-55fb822a7468"
-    },
-    "plugins": ["react-native-reanimated/plugin"]
+    }
   }
 }

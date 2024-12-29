@@ -1,19 +1,46 @@
-import React from "react";
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, View } from "react-native";
 import { WebView } from "react-native-webview";
+import React, { useRef, useState } from "react";
+import { GestureHandlerRootView, PanGestureHandler } from "react-native-gesture-handler";
+import Animated, { Easing } from "react-native";
 
 export default function App() {
+  const webviewRef = useRef(null);
+  const [translateY, setTranslateY] = useState(0);
+
+  const onGestureEvent = (event) => {
+    setTranslateY(event.nativeEvent.translationY);
+  };
+
+  const onHandlerStateChange = (event) => {
+    if (event.nativeEvent.translationY > 100) {
+      if (webviewRef.current) {
+        webviewRef.current.reload();
+      }
+    }
+
+    setTranslateY(0);
+  };
+
   return (
-    <View style={styles.container}>
-      <WebView
-        source={{ uri: "https://chessmong.com" }}
-        style={{ flex: 1 }}
-        originWhitelist={["*"]}
-        cacheEnabled={false}
-      />
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <PanGestureHandler
+        onGestureEvent={onGestureEvent}
+        onHandlerStateChange={onHandlerStateChange}
+      >
+        <Animated.View style={[styles.container, { transform: [{ translateY }] }]}>
+          <WebView
+            ref={webviewRef}
+            source={{ uri: "https://chessmong.com" }}
+            style={{ flex: 1 }}
+            originWhitelist={["*"]}
+            cacheEnabled={false}
+          />
+        </Animated.View>
+      </PanGestureHandler>
       <StatusBar style="auto" />
-    </View>
+    </GestureHandlerRootView>
   );
 }
 
