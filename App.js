@@ -1,26 +1,20 @@
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet } from "react-native";
-import { WebView } from "react-native-webview";
 import React from "react";
-import { GestureHandlerRootView, PanGestureHandler } from "react-native-gesture-handler";
-import Animated from "react-native";
+import { StatusBar } from "expo-status-bar";
+import { StyleSheet, View } from "react-native";
+import { WebView } from "react-native-webview";
 
 export default function App() {
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <PanGestureHandler onGestureEvent={onGestureEvent}>
-        <Animated.View style={styles.container}>
-          <WebView
-            source={{ uri: "https://chessmong.com" }}
-            style={{ flex: 1 }}
-            originWhitelist={["*"]}
-            cacheEnabled={false}
-            scrollEnabled={true}
-          />
-        </Animated.View>
-      </PanGestureHandler>
+    <View style={{ flex: 1 }}>
+      <WebView
+        source={{ uri: "https://chessmong.com" }}
+        style={{ flex: 1 }}
+        originWhitelist={["*"]}
+        cacheEnabled={false}
+        scrollEnabled={true}
+      />
       <StatusBar style="auto" />
-    </GestureHandlerRootView>
+    </View>
   );
 }
 
