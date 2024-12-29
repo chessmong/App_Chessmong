@@ -10,9 +10,9 @@ export default function App() {
   const [translateY, setTranslateY] = useState(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const onGestureEvent = Animated.event([{ nativeEvent: { translationY: setTranslateY } }], {
-    useNativeDriver: false,
-  });
+  const onGestureEvent = (event) => {
+    setTranslateY(event.nativeEvent.translationY);
+  };
 
   const onHandlerStateChange = (event) => {
     if (event.nativeEvent.state === State.END && event.nativeEvent.translationY > 100) {
@@ -41,6 +41,7 @@ export default function App() {
             style={{ flex: 1 }}
             originWhitelist={["*"]}
             cacheEnabled={false}
+            scrollEnabled={true}
           />
         </Animated.View>
       </PanGestureHandler>
