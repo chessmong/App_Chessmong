@@ -8,25 +8,32 @@ import Animated from "react-native";
 export default function App() {
   const webviewRef = useRef(null);
   const [translateY, setTranslateY] = useState(0);
+  const [isAtTop, setIsAtTop] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const onGestureEvent = (event) => {
     const translationY = event.nativeEvent.translationY;
 
-    if (translationY > 0 && isRefreshing === false) {
+    if (isAtTop && translationY > 0) {
       setTranslateY(translationY);
     }
   };
 
   const onHandlerStateChange = (event) => {
-    if (event.nativeEvent.translationY > 100) {
+    if (isAtTop && event.nativeEvent.translationY > 100) {
       if (webviewRef.current && !isRefreshing) {
         setIsRefreshing(true);
         webviewRef.current.reload();
         setTimeout(() => setIsRefreshing(false), 1000);
       }
     }
+
     setTranslateY(0);
+  };
+
+  const handleWebViewScroll = (event) => {
+    const { contentOffset } = event.nativeEvent;
+    setIsAtTop(contentOffset.y === 0);
   };
 
   return (
@@ -44,12 +51,7 @@ export default function App() {
             style={{ flex: 1 }}
             originWhitelist={["*"]}
             cacheEnabled={false}
-            onScroll={(event) => {
-              const { contentOffset } = event.nativeEvent;
-              if (contentOffset.y === 0 && translateY === 0) {
-                setIsRefreshing(false);
-              }
-            }}
+            onScroll={handleWebViewScroll}
           />
         </Animated.View>
       </PanGestureHandler>
