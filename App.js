@@ -3,7 +3,7 @@ import { StyleSheet, View } from "react-native";
 import { WebView } from "react-native-webview";
 import React, { useRef, useState } from "react";
 import { GestureHandlerRootView, PanGestureHandler } from "react-native-gesture-handler";
-import Animated, { Easing } from "react-native";
+import Animated from "react-native";
 
 export default function App() {
   const webviewRef = useRef(null);
@@ -19,7 +19,6 @@ export default function App() {
         webviewRef.current.reload();
       }
     }
-
     setTranslateY(0);
   };
 
@@ -28,6 +27,7 @@ export default function App() {
       <PanGestureHandler
         onGestureEvent={onGestureEvent}
         onHandlerStateChange={onHandlerStateChange}
+        enabled={false}
       >
         <Animated.View style={[styles.container, { transform: [{ translateY }] }]}>
           <WebView
@@ -36,6 +36,7 @@ export default function App() {
             style={{ flex: 1 }}
             originWhitelist={["*"]}
             cacheEnabled={false}
+            onScroll={() => setTranslateY(0)}
           />
         </Animated.View>
       </PanGestureHandler>
