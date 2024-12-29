@@ -8,15 +8,22 @@ import Animated from "react-native";
 export default function App() {
   const webviewRef = useRef(null);
   const [translateY, setTranslateY] = useState(0);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const onGestureEvent = (event) => {
-    setTranslateY(event.nativeEvent.translationY);
+    const translationY = event.nativeEvent.translationY;
+
+    if (translationY > 0 && isRefreshing === false) {
+      setTranslateY(translationY);
+    }
   };
 
   const onHandlerStateChange = (event) => {
     if (event.nativeEvent.translationY > 100) {
-      if (webviewRef.current) {
+      if (webviewRef.current && !isRefreshing) {
+        setIsRefreshing(true);
         webviewRef.current.reload();
+        setTimeout(() => setIsRefreshing(false), 1000);
       }
     }
     setTranslateY(0);
@@ -27,16 +34,22 @@ export default function App() {
       <PanGestureHandler
         onGestureEvent={onGestureEvent}
         onHandlerStateChange={onHandlerStateChange}
-        enabled={false}
       >
-        <Animated.View style={[styles.container, { transform: [{ translateY }] }]}>
+        <Animated.View
+          style={[styles.container, { transform: [{ translateY: isRefreshing ? 0 : translateY }] }]}
+        >
           <WebView
             ref={webviewRef}
             source={{ uri: "https://chessmong.com" }}
             style={{ flex: 1 }}
             originWhitelist={["*"]}
             cacheEnabled={false}
-            onScroll={() => setTranslateY(0)}
+            onScroll={(event) => {
+              const { contentOffset } = event.nativeEvent;
+              if (contentOffset.y === 0 && translateY === 0) {
+                setIsRefreshing(false);
+              }
+            }}
           />
         </Animated.View>
       </PanGestureHandler>
@@ -48,6 +61,6 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "#2a3a47",
   },
 });
