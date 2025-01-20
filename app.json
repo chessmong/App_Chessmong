@@ -22,7 +22,7 @@
         "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.hyejean.CHESSMONG"
+      "package": "com.chess.CHESSMONG"
     },
     "web": {
       "favicon": "./assets/favicon.png"
